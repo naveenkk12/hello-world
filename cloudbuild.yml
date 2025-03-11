@@ -49,3 +49,12 @@ timeout: '1200s'
 # Store the built image as an artifact
 images:
   - '$_IMAGE_NAME'
+
+  steps:
+  # Deploy to GKE
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'kubernetes/deployment.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=your-cluster'
+
