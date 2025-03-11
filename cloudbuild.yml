@@ -1,0 +1,51 @@
+# Define variables for easy modifications
+substitutions:
+  _SERVICE_NAME: "my-app"  # Change this to your Cloud Run service name
+  _REGION: "us-central1"   # Modify this to your preferred GCP region
+  _REPO: "my-repo"         # Change to your Artifact Registry repo name
+  _IMAGE_NAME: "gcr.io/$PROJECT_ID/$_REPO/$_SERVICE_NAME"
+
+steps:
+  # Step 1: Clone the GitHub repository (if needed)
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['clone', 'https://github.com/YOUR-USERNAME/YOUR-REPO.git']
+
+  # Step 2: Install dependencies (Modify for your tech stack)
+  - name: 'gcr.io/cloud-builders/npm'  # Change for Python, Java, etc.
+    args: ['install']
+    dir: 'app/'  # Adjust this based on your project structure
+
+  # Step 3: Run tests
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['test']
+    dir: 'app/'
+
+  # Step 4: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_IMAGE_NAME', '.']
+
+  # Step 5: Push Docker image to Google Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_IMAGE_NAME']
+
+  # Step 6: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - '$_IMAGE_NAME'
+      - '--region'
+      - '$_REGION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+
+# Set timeout to prevent long builds
+timeout: '1200s'
+
+# Store the built image as an artifact
+images:
+  - '$_IMAGE_NAME'
