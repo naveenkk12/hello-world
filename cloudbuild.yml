@@ -8,7 +8,7 @@ substitutions:
 steps:
   # Step 1: Clone the GitHub repository (if needed)
   - name: 'gcr.io/cloud-builders/git'
-    args: ['clone', 'https://github.com/YOUR-USERNAME/YOUR-REPO.git']
+    args: ['clone', 'https://github.com/naveenkk12/hello-world.git']
 
   # Step 2: Install dependencies (Modify for your tech stack)
   - name: 'gcr.io/cloud-builders/npm'  # Change for Python, Java, etc.
